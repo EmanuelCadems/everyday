@@ -24,7 +24,6 @@ gem 'jquery-rails'
 
 # To use ActiveModel has_secure_password
 gem 'bcrypt-ruby', '~> 3.0.0'
-
 gem "cancan", "~> 1.6.7"
 
 group :development, :test do

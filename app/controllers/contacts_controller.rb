@@ -7,14 +7,14 @@ class ContactsController < ApplicationController
   # GET /contacts.json
   def index
     if params[:letter]
-      @contacts = Contact.by_letter(params[:letter])
+      @contactos = Contact.by_letter(params[:letter])
     else
-      @contacts = Contact.order("lastname, firstname")
+      @contactos = Contact.order("lastname, firstname")
     end
     
     respond_to do |format|
       format.html # index.html.erb
-      format.json { render json: @contacts }
+      format.json { render json: @contactos }
     end
   end
 
