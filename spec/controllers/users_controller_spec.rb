@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe UsersController do
-  describe 'user access' do 
+   describe 'user access' do 
     before :each do
       session[:user_id] = create(:user).id
     end

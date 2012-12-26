@@ -1,79 +1,11 @@
 require 'spec_helper'
 
 describe ContactsController do
-  describe "guest access" do
-    describe 'GET #index' do
-      it "populate an array of contacts" do
-        contact = create(:contact)
-        get :index
-        assigns(:contacts).should eq [contact]
-      end
-
-      it "renders the :index template" do
-        get :index
-        response.should render_template :index
-      end
-    end 
-
-    describe 'GET #show' do
-      it "assigns the requested contact to @contact" do
-        contact = create(:contact)
-        get :show, id: contact
-        assigns(:contact).should eq contact
-      end
-
-      it "renders the :show template" do
-        contact = create(:contact)
-        get :show, id: contact
-        response.should render_template :show
-      end
-    end
-
-    describe 'GET #new' do
-      it "requires login" do
-        get :new
-        response.should redirect_to login_url
-      end
-    end
-
-    describe 'GET #edit' do
-      it "requires login" do
-        get :edit, id: create(:contact)
-        response.should redirect_to login_url
-      end
-    end
-
-    describe 'POST #create' do
-      it "requires login" do
-        post :create, id: create(:contact), contact: attributes_for(:contact)
-        response.should redirect_to login_url
-      end
-    end
-
-    describe 'PUT #update' do
-      it "requires login" do
-        put :update, id: create(:contact), contact: attributes_for(:contact)
-        response.should redirect_to login_url
-      end
-    end
-
-    describe 'DELETE #destroy' do
-      it "requires login" do
-        delete :destroy, id: create(:contact)
-        response.should redirect_to login_url
-      end
-    end
+  before :each do
+    @contact = create(:contact, firstname: 'Emanuel', lastname: 'Alarcon')
   end
 
-  describe "admin access"do
-    before :each do
-      @contact = create(:contact, firstname: 'Emanuel', lastname: 'Alarcon' )
-      user = create(:admin)
-      session[:user_id] = user.id
-      Rails.logger.debug "****************************************************************************"
-      Rails.logger.debug "sesion : #{user.id}"
-    end
-
+  shared_examples("public access to contacts") do
     describe 'GET #index' do
       it "populates an array of contacts" do        
         get :index
@@ -96,7 +28,9 @@ describe ContactsController do
         response.should render_template :show
       end
     end
+  end
 
+  shared_examples("full access to contacts") do
     describe 'GET #new' do
       it "assigns the new Contact to @contact" do        
         get :new
@@ -188,9 +122,6 @@ describe ContactsController do
       context "with a invalid attributes" do
         it "locates the requested @contact" do
           put :update, id: @contact, contact:attributes_for(:invalid_contact)
-          Rails.logger.debug "********      attributes_for      *****************"
-          Rails.logger.debug "#{attributes_for(:invalid_contact)}"
-          Rails.logger.debug "____________________________________________________"
           assigns(:contact).should eq @contact
         end
 
@@ -223,145 +154,64 @@ describe ContactsController do
     end
   end
 
+
+  describe "admin access"do
+    before :each do
+      set_user_session(create(:admin))
+    end
+
+    it_behaves_like "public access to contacts"
+    it_behaves_like "full access to contacts"
+
+  end
+
   describe "user access"do
     before :each do
-      @contact = create(:contact, firstname: 'Samanta', lastname: 'Ursula')
-      user = create(:user)
-      session[:user_id] = user.id
+      set_user_session(create(:user))
     end
 
-    describe 'GET #index' do
-      it "return an array with a contacts" do
-        get :index
-        assigns(:contacts).should eq [@contact]
-      end
+    it_behaves_like "public access to contacts"
+    it_behaves_like "full access to contacts"
 
-      it "renders the :index view" do
-        get :index
-        response.should render_template :index
-      end
-    end
+  end
+
+  describe "guest access" do
+    it_behaves_like "public access to contacts"
     
-    describe 'GET #show' do
-      it "assigns the contact requested to @contact" do
-        get :show, id: @contact
-        assigns(:contact).should eq @contact
-      end
-
-      it "renders the :show template" do
-        get :show, id: @contact
-        response.should render_template :show
+    describe 'GET #new' do
+      it "requires login" do
+        get :new
+        response.should redirect_to login_url
       end
     end
 
-    describe 'GET #new' do
-      it "assigns the new Contact to @contact" do
-        get :new
-        assigns(:contact).should be_a_new(Contact)
-      end
-
-      it "assigns the home, office and mobile phones to the contact" do
-        get :new
-        assigns(:contact).phones.map do |phone|
-          phone.phone_type 
-        end.should eq %w(home office mobile)
-      end
-
-      it "renders the :new template" do
-        get :new
-        response.should render_template :new
+    describe 'GET #edit' do
+      it "requires login" do
+        get :edit, id: create(:contact)
+        response.should redirect_to login_url
       end
     end
 
     describe 'POST #create' do
-      before :each do
-        @phones = [
-          attributes_for(:phone, phone_type: 'home'),
-          attributes_for(:phone, phone_type: 'office'),
-          attributes_for(:phone, phone_type: 'mobile')
-        ]
-      end
-
-      context 'with a valid attributes' do
-        it "saves the new contact in the database" do
-          expect{
-            post :create, contact: attributes_for(:contact, phones_attributes: @phones)
-          }.to change(Contact, :count).by(1)
-        end
-
-        it "redirect to the home page" do
-          post :create, contact: attributes_for(:contact, phones_attributes:@phones)
-          response.should redirect_to Contact.last
-        end
-      end
-
-      context 'with a invalid attributes' do 
-        it "does not save the contact in the database" do
-          expect{
-            post :create, contact: attributes_for(:invalid_contact, phones_attributes: @phones)
-          }.to_not change(Contact, :count)
-        end
-
-        it "re-renders the :new template" do
-          post :create, contact: attributes_for(:invalid_contact)
-          response.should render_template :new
-        end
+      it "requires login" do
+        post :create, id: create(:contact), contact: attributes_for(:contact)
+        response.should redirect_to login_url
       end
     end
 
     describe 'PUT #update' do
-      context 'with valid attributes' do
-        it "locates the requested contact" do
-          put :update, id: @contact, contact: attributes_for(:contact)
-          assigns(:contact).should eq @contact
-        end
-
-        it "change @contact's attributes" do
-          put :update, id: @contact, contact: attributes_for(:contact, 
-            firstname: 'Carlos', lastname: 'Santana')
-          @contact.reload
-          @contact.firstname.should eq('Carlos')
-          @contact.lastname.should eq('Santana')
-        end
-
-        it "redirect to the contact" do
-          put :update, id: @contact, contact: attributes_for(:contact)
-          response.should redirect_to @contact 
-        end
-      end
-
-      context 'with invalid attributes' do
-        it "locates the requested contact" do
-          put :update, id: @contact, contact: attributes_for(:invalid_contact)
-          assigns(:contact).should eq @contact
-        end
-
-        it "does not change contact's attributes" do
-          put :update, id: @contact, contact: attributes_for(:contact, 
-            firstname: 'Pedro', lastname: nil)
-          @contact.reload
-          @contact.firstname.should_not eq('Pedro')
-          @contact.lastname.should eq('Ursula')
-        end
-
-        it "re-renders :edit template" do
-          put :update, id: @contact, contact: attributes_for(:invalid_contact)
-          response.should render_template :edit
-        end
+      it "requires login" do
+        put :update, id: create(:contact), contact: attributes_for(:contact)
+        response.should redirect_to login_url
       end
     end
 
     describe 'DELETE #destroy' do
-      it "delete the contact from the database" do
-        expect{
-          delete :destroy, id: @contact
-        }.to change(Contact, :count).by(-1)
-      end
-
-      it "redirects to the home page" do
-        delete :destroy, id: @contact
-        response.should redirect_to contacts_url
+      it "requires login" do
+        delete :destroy, id: create(:contact)
+        response.should redirect_to login_url
       end
     end
   end
+
 end
