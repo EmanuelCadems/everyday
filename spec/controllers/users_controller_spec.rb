@@ -8,17 +8,20 @@ describe UsersController do
 
     it "GET#index denies access" do
       get :index
-      response.should redirect_to root_url
+      # response.should redirect_to root_url
+      response.should require_login
     end
 
     it "GET#new denies access" do
       get :new
-      response.should redirect_to root_url
+      response.should require_login
+      # response.should redirect_to root_url
     end
 
     it "POST#create denies access" do
       post :create, user: attributes_for(:user)
-      response.should redirect_to root_url
+      response.should require_login
+      # response.should redirect_to root_url
     end
   end
 end

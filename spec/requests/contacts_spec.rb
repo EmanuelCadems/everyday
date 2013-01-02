@@ -20,10 +20,13 @@ describe "Manage contacts" do
       within "#contact_#{contact.id}" do
         click_link "Destroy"
       end
+      sleep(3)
       alert = page.driver.browser.switch_to.alert
-      alert.accept  
+      alert.accept
+      sleep(3)
     }.to change(Contact, :count).by(-1)
     page.should have_content "Contacts"
     page.should_not have_content "Juan Alarcon"
   end
 end
+

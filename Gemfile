@@ -30,6 +30,7 @@ group :development, :test do
   gem "rspec-rails", "~> 2.10.1"
   gem "factory_girl_rails", "~> 3.2.0"
   gem "guard-rspec", "~> 0.7.0"
+  gem "selenium-webdriver"
 end
 
 group :test do
@@ -39,6 +40,5 @@ group :test do
   gem "launchy", "~> 2.1.0"
 end
 
-gem 'hirb'
+# gem 'hirb'
 
-gem 'selenium-webdriver'

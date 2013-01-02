@@ -181,35 +181,40 @@ describe ContactsController do
     describe 'GET #new' do
       it "requires login" do
         get :new
-        response.should redirect_to login_url
+        response.should require_login
+        # response.should redirect_to login_url
       end
     end
 
     describe 'GET #edit' do
       it "requires login" do
         get :edit, id: create(:contact)
-        response.should redirect_to login_url
+        response.should require_login
+        # response.should redirect_to login_url
       end
     end
 
     describe 'POST #create' do
       it "requires login" do
         post :create, id: create(:contact), contact: attributes_for(:contact)
-        response.should redirect_to login_url
+        # response.should redirect_to login_url
+        response.should require_login
       end
     end
 
     describe 'PUT #update' do
       it "requires login" do
         put :update, id: create(:contact), contact: attributes_for(:contact)
-        response.should redirect_to login_url
+        # response.should redirect_to login_url
+        response.should require_login
       end
     end
 
     describe 'DELETE #destroy' do
       it "requires login" do
         delete :destroy, id: create(:contact)
-        response.should redirect_to login_url
+        # response.should redirect_to login_url
+        response.should require_login
       end
     end
   end
