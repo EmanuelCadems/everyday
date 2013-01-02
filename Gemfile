@@ -40,3 +40,5 @@ group :test do
 end
 
 gem 'hirb'
+
+gem 'selenium-webdriver'
