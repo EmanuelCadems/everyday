@@ -1,15 +1,18 @@
 require 'spec_helper'
 
 describe ContactsController do
-  before :each do
-    @contact = create(:contact, firstname: 'Emanuel', lastname: 'Alarcon')
+  #before :each do
+  #  @contact = create(:contact, firstname: 'Emanuel', lastname: 'Alarcon')
+  #end
+  let(:contact) do
+    create(:contact, firstname:'Emanuel', lastname:'Alarcon')
   end
 
   shared_examples("public access to contacts") do
     describe 'GET #index' do
       it "populates an array of contacts" do        
         get :index
-        assigns(:contacts).should eq [@contact]
+        assigns(:contacts).should eq [contact]
       end
       it "render teh :index view" do
         get :index
@@ -18,13 +21,13 @@ describe ContactsController do
     end
 
     describe 'GET #show' do
-      it "assigns the requested contact to @contact" do
-        get :show, id: @contact
-        assigns(:contact).should eq @contact
+      it "assigns the requested contact to contact" do
+        get :show, id: contact
+        assigns(:contact).should eq contact
       end
 
       it "renders the :show template" do      
-        get :show, id: @contact
+        get :show, id: contact
         response.should render_template :show
       end
     end
@@ -32,7 +35,7 @@ describe ContactsController do
 
   shared_examples("full access to contacts") do
     describe 'GET #new' do
-      it "assigns the new Contact to @contact" do        
+      it "assigns the new Contact to contact" do        
         get :new
         assigns(:contact).should be_a_new(Contact)
       end
@@ -51,13 +54,13 @@ describe ContactsController do
     end
 
     describe 'GET #edit' do
-      it"asssigns the requested contacto to @contact" do
-        get :edit, id: @contact
-        assigns(:contact).should eq @contact
+      it"asssigns the requested contacto to contact" do
+        get :edit, id: contact
+        assigns(:contact).should eq contact
       end
 
       it"renders the edit template" do
-        get :edit, id: @contact
+        get :edit, id: contact
         response.should render_template :edit
       end
     end
@@ -100,41 +103,41 @@ describe ContactsController do
 
     describe 'PUT #update' do
       context "with a valid attributes" do
-        it "locates the requested @contact" do
-          put :update, id: @contact, contact: attributes_for(:contact)
-          assigns(:contact).should eq @contact
+        it "locates the requested contact" do
+          put :update, id: contact, contact: attributes_for(:contact)
+          assigns(:contact).should eq contact
         end
 
-        it "change @contact's attributes" do
-          put :update, id: @contact, contact: attributes_for(:contact, 
+        it "change contact's attributes" do
+          put :update, id: contact, contact: attributes_for(:contact, 
             firstname: 'Jose', lastname: 'Arcadio')
-          @contact.reload
-          @contact.firstname.should eq('Jose')
-          @contact.lastname.should eq('Arcadio')
+          contact.reload
+          contact.firstname.should eq('Jose')
+          contact.lastname.should eq('Arcadio')
         end
 
         it "redirects to the :contact" do
-          put :update, id: @contact, contact: attributes_for(:contact)
-          response.should redirect_to @contact
+          put :update, id: contact, contact: attributes_for(:contact)
+          response.should redirect_to contact
         end
       end
 
       context "with a invalid attributes" do
-        it "locates the requested @contact" do
-          put :update, id: @contact, contact:attributes_for(:invalid_contact)
-          assigns(:contact).should eq @contact
+        it "locates the requested contact" do
+          put :update, id: contact, contact:attributes_for(:invalid_contact)
+          assigns(:contact).should eq contact
         end
 
-        it "does not change @contact's attributes" do
-          put :update, id: @contact, contact:attributes_for(:contact, 
+        it "does not change contact's attributes" do
+          put :update, id: contact, contact:attributes_for(:contact, 
             firstname: 'Samanta', lastname: nil)
-          @contact.reload
-          @contact.firstname.should_not eq ('Samanta')
-          @contact.lastname.should eq('Alarcon')
+          contact.reload
+          contact.firstname.should_not eq ('Samanta')
+          contact.lastname.should eq('Alarcon')
         end
 
         it "re-renders the :edit template" do 
-          put :update, id: @contact, contact: attributes_for(:invalid_contact)
+          put :update, id: contact, contact: attributes_for(:invalid_contact)
           response.should render_template :edit
         end
       end
@@ -142,13 +145,15 @@ describe ContactsController do
 
     describe 'DELETE destroy' do
       it "delete the contact" do
+        contact
         expect{
-          delete :destroy, id: @contact
+          delete :destroy, id: contact
         }.to change(Contact, :count).by(-1)
       end
 
       it "redirect to contacts#index" do
-        delete :destroy, id: @contact
+        contact
+        delete :destroy, id: contact
         response.should redirect_to contacts_url
       end
     end
@@ -212,6 +217,7 @@ describe ContactsController do
 
     describe 'DELETE #destroy' do
       it "requires login" do
+        contact
         delete :destroy, id: create(:contact)
         # response.should redirect_to login_url
         response.should require_login
