@@ -10,7 +10,7 @@ FactoryGirl.define do
       phone_type 'home'
     end
     factory :work_phone do
-      phone_type 'work'
+      phone_type 'office'
     end
     factory :mobile_phone do
       phone_type 'mobile'
