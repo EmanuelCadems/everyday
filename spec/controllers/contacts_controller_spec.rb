@@ -65,24 +65,31 @@ describe ContactsController do
       end
     end
     describe 'POST #create' do
-      before :each do
-        @phones = [
+      # before :each do
+      #   @phones = [
+      #     attributes_for(:phone, phone_type: "home"),
+      #     attributes_for(:phone, phone_type: "office"),
+      #     attributes_for(:phone, phone_type: "mobile")
+      #   ]
+      # end
+
+      let(:phones)do
+        [
           attributes_for(:phone, phone_type: "home"),
           attributes_for(:phone, phone_type: "office"),
           attributes_for(:phone, phone_type: "mobile")
         ]
       end
-
       context "with valid attributes" do
         it "creates the new contact" do
           expect{
             post :create, contact: attributes_for(:contact,
-                phones_attributes: @phones)              
+                phones_attributes: phones)              
           }.to change(Contact, :count).by(1)
         end
 
         it "redirects to the new contact" do
-          post :create, contact: attributes_for(:contact, phones_attributes: @phones)
+          post :create, contact: attributes_for(:contact, phones_attributes: phones)
           response.should redirect_to Contact.last
         end
       end
@@ -90,7 +97,7 @@ describe ContactsController do
       context "with invalid attributes" do
         it "does not save the new contact in the database" do
           expect{
-            post :create, contact: attributes_for(:invalid_contact, phones_attributes: @phones)
+            post :create, contact: attributes_for(:invalid_contact, phones_attributes: phones)
           }.to_not change(Contact, :count)
         end
         
