@@ -44,9 +44,9 @@ describe UsersController do
   end
 
   describe 'admin access', :admin => true do
-    let :admin do
-      create(:admin)
-    end
+    # let :admin do
+    #   create(:admin)
+    # end
 
     let :user do
       create(:user)
@@ -54,6 +54,7 @@ describe UsersController do
 
     before :each do
       # @admin = create(:admin)
+      admin =  double(User)
       session[:user_id] = admin.id
     end
 

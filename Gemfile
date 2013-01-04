@@ -31,6 +31,7 @@ group :development, :test do
   gem "factory_girl_rails", "~> 3.2.0"
   gem "guard-rspec", "~> 0.7.0"
   gem "selenium-webdriver"
+  gem "rspec-mocks"
 end
 
 group :test do
@@ -38,6 +39,7 @@ group :test do
   gem "capybara", "~> 1.1.2"
   gem "database_cleaner", "~> 0.7.2"
   gem "launchy", "~> 2.1.0"
+  gem "shoulda-matchers"
 end
 
 # gem 'hirb'
