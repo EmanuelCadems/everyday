@@ -43,16 +43,27 @@ describe UsersController do
     end
   end
 
-  describe 'admin access' do
-    before :each do
-      @admin = create(:admin)
-      session[:user_id] = @admin.id
+  describe 'admin access', :admin => true do
+    let :admin do
+      create(:admin)
     end
+
+    let :user do
+      create(:user)
+    end
+
+    before :each do
+      # @admin = create(:admin)
+      session[:user_id] = admin.id
+    end
+
+
     describe "GET#index" do
-      it "collects users into @users" do
-        user = create(:user)
+      it "collects users into @users" do        
+        admin
+        user
         get :index
-        assigns(:users).should eq [@admin, user]
+        assigns(:users).should eq [admin, user]
       end
       it "renders index template" do
         get :index
